@@ -14,6 +14,8 @@ cd "$sdk_dir"
 ./scripts/feeds install -a
 printf '\nCONFIG_PACKAGE_nimarkoflow=m\nCONFIG_PACKAGE_luci-app-nimarkoflow=m\n' >> .config
 make defconfig
-make -j2 package/nimarkoflow/compile V=s
-make -j2 package/luci-app-nimarkoflow/compile V=s
+# These packages contain only scripts and LuCI assets. Runtime dependencies
+# remain in APK/IPK metadata and are resolved by the router package manager.
+make -j2 package/nimarkoflow/compile NO_DEPS=1 V=s
+make -j2 package/luci-app-nimarkoflow/compile NO_DEPS=1 V=s
 echo 'Пакеты собраны в bin/packages. Для APK используйте подпись своим ключом.'
