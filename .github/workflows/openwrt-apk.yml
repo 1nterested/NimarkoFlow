@@ -29,7 +29,13 @@ jobs:
         run: |
           mkdir artifacts
           find sdk/bin/packages -type f \( -name 'nimarkoflow-*.apk' -o -name 'luci-app-nimarkoflow-*.apk' \) -exec cp {} artifacts/ \;
-          find sdk -maxdepth 1 -type f -name '*.pub' -exec cp {} artifacts/ \;
+          openssl genrsa -out nimarkoflow-signing.pem 2048
+          openssl pkey -in nimarkoflow-signing.pem -pubout -out artifacts/nimarkoflow-signing.pem.pub
+          sdk/staging_dir/host/bin/apk adbsign --sign-key nimarkoflow-signing.pem artifacts/*.apk
+          mkdir verify-keys
+          cp artifacts/nimarkoflow-signing.pem.pub verify-keys/
+          sdk/staging_dir/host/bin/apk --keys-dir "$GITHUB_WORKSPACE/verify-keys" verify artifacts/*.apk
+          rm nimarkoflow-signing.pem
           test "$(find artifacts -name '*.apk' | wc -l)" -eq 2
           test "$(find artifacts -name '*.pub' | wc -l)" -ge 1
           cd artifacts

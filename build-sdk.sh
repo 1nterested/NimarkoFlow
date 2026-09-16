@@ -14,6 +14,6 @@ cd "$sdk_dir"
 ./scripts/feeds install -a
 printf '\nCONFIG_PACKAGE_nimarkoflow=m\nCONFIG_PACKAGE_luci-app-nimarkoflow=m\n' >> .config
 make defconfig
-make package/nimarkoflow/compile V=s
-make package/luci-app-nimarkoflow/compile V=s
+make -j2 package/nimarkoflow/compile V=s
+make -j2 package/luci-app-nimarkoflow/compile V=s
 echo 'Пакеты собраны в bin/packages. Для APK используйте подпись своим ключом.'
