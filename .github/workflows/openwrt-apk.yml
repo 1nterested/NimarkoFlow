@@ -33,7 +33,9 @@ jobs:
           openssl pkey -in nimarkoflow-signing.pem -pubout -out artifacts/nimarkoflow-signing.pem.pub
           # SDK output is unsigned; allow reading it only while signing.
           # Verification below and installation still require a trusted signature.
-          sdk/staging_dir/host/bin/apk adbsign --allow-untrusted --sign-key nimarkoflow-signing.pem artifacts/*.apk
+          for package in artifacts/*.apk; do
+            sdk/staging_dir/host/bin/apk adbsign --allow-untrusted --sign-key nimarkoflow-signing.pem "$package"
+          done
           mkdir verify-keys
           cp artifacts/nimarkoflow-signing.pem.pub verify-keys/
           sdk/staging_dir/host/bin/apk --keys-dir "$GITHUB_WORKSPACE/verify-keys" verify artifacts/*.apk
