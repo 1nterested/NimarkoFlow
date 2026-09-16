@@ -1,0 +1,8 @@
+{
+  "admin/nimarkoflow": {
+    "title": "NimarkoFlow",
+    "order": 42,
+    "action": { "type": "view", "path": "nimarkoflow/flow" },
+    "depends": { "acl": ["nimarkoflow-user"] }
+  }
+}

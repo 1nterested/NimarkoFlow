@@ -1,0 +1,12 @@
+# Build artifacts
+.build/
+dist/
+node_modules/
+*.ipk
+*.apk
+# Local credentials and signing keys
+.env
+.env.*
+*.key
+*.pem
+*.p12

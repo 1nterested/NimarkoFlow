@@ -1,0 +1,7 @@
+{
+  "nimarkoflow-user": {
+    "description": "NimarkoFlow status and connection controls",
+    "read": { "ubus": { "nimarkoflow": ["status"] } },
+    "write": { "ubus": { "nimarkoflow": ["import", "connect", "disconnect", "refresh", "remove"] } }
+  }
+}
