@@ -272,7 +272,8 @@ function schedule_start_retry(path, delay_seconds) {
     if (!ensure_parent_dir(path))
         return false;
 
-    let worker = command_from_args([ "sleep", delay_seconds ]) +
+    // A detached retry must release the lock inherited from rc.common.
+    let worker = "exec 1000>&-; " + command_from_args([ "sleep", delay_seconds ]) +
         "; " + command_from_args([ "rm", "-f", path ]) +
         "; exec " + command_from_args([ SERVICE_INIT, "retry_start_on_wan_up" ]);
     let result = command_capture(command_from_args([ "sh", "-c", worker ]) + " >/dev/null 2>&1 & echo $!");
