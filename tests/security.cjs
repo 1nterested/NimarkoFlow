@@ -11,6 +11,7 @@ function execute(method, data={},options={}) {
   const backend={service:{nimarkoflow:{running:1,enabled:1,status:options.busy?'restarting':'running'}},actions:{subscription:[]},share_link:'vless://PRIVATE',password:'PRIVATE',url:secret};
   const mockedFS={popen:command=>{commands.push(command);return {read:()=>JSON.stringify(command.includes('get_ui_state')?backend:{success:true,share_link:'vless://PRIVATE',message:secret}),close:()=>0};},open:()=>({read:()=>options.raw??JSON.stringify(data),close:()=>0}),mkdir:()=>!options.locked,chmod:()=>true,unlink:()=>true,rmdir:()=>true,writefile:()=>1};
   const context={ARGV:['call',method],require:n=>n==='fs'?mockedFS:{cursor:()=>c},print:s=>{output+=s;},sprintf:(fmt,value)=>JSON.stringify(value)+'\n',json:JSON.parse,trim:s=>s.trim(),length:s=>s?.length??0,substr:(s,start,len)=>s.substr(start,len),split:(s,re)=>s.split(re),match:(s,re)=>s.match(re),type:v=>v===null?'null':Array.isArray(v)?'array':typeof v,system:command=>{commands.push(command);return options.invalidProtocol?1:0;},exit:()=>{throw 'EXIT';}};
+  context.die=message=>{throw new Error(message);};
   try{vm.runInNewContext(source,context,{timeout:1000});}catch(e){if(e!=='EXIT')throw e;}
   return {value:JSON.parse(output),output,commands,calls,store};
 }

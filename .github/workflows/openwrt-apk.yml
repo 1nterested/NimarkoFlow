@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - '.github/workflows/openwrt-apk.yml'
+      - 'nimarkoflow/**'
+      - 'luci-app-nimarkoflow/**'
+      - 'build-sdk.sh'
 permissions:
   contents: read
 jobs:

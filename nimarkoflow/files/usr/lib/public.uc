@@ -38,7 +38,7 @@ function status() {
     };
 }
 function set(c, section, option, value) {
-    if (!c.set(CONFIG, section, option, value)) throw "storage";
+    if (!c.set(CONFIG, section, option, value)) die("storage");
 }
 function start_action(action) {
     // action is selected exclusively from constants below, never from stdin.
@@ -62,7 +62,7 @@ function import_profile(data) {
             if (!match(lines[i], /^(vless|vmess|trojan|ss|hysteria2|hy2|tuic):\/\/[^\s]+$/)) return { ok: false, error: "invalid" };
         }
         // Use the real protocol parser before saving; secrets never enter argv.
-        if (fs.writefile(LOCK + "/input", text) == null) throw "storage";
+        if (fs.writefile(LOCK + "/input", text) == null) die("storage");
         let valid = system("/usr/bin/ucode -L /usr/lib/nimarkoflow /usr/lib/nimarkoflow/subscription/parser.uc normalize-content-validated " + LOCK + "/input " + LOCK + "/normalized >/dev/null 2>&1") == 0;
         fs.unlink(LOCK + "/input");
         fs.unlink(LOCK + "/normalized");
@@ -76,14 +76,14 @@ function import_profile(data) {
     let c = uci.cursor();
     c.delete(CONFIG, "flow_source");
     c.delete(CONFIG, "flow");
-    if (!c.set(CONFIG, "flow", "section")) throw "storage";
+    if (!c.set(CONFIG, "flow", "section")) die("storage");
     set(c, "flow", "label", "NimarkoFlow");
     set(c, "flow", "enabled", "1");
     set(c, "flow", "action", "connection");
     if (mode == "full") set(c, "flow", "fully_routed_ips", [ "0.0.0.0/0", "::/0" ]);
     else set(c, "flow", "community_lists", [ "russia_inside" ]);
     if (is_url) {
-        if (!c.set(CONFIG, "flow_source", "subscription_url")) throw "storage";
+        if (!c.set(CONFIG, "flow_source", "subscription_url")) die("storage");
         set(c, "flow_source", "section", "flow");
         set(c, "flow_source", "url", text);
         set(c, "flow_source", "auto_hwid", "1");
@@ -92,8 +92,8 @@ function import_profile(data) {
         set(c, "flow_source", "subscription_update_enabled", "1");
         set(c, "flow_source", "subscription_update_interval", "1h");
     } else set(c, "flow", "selector_proxy_links", lines);
-    if (!c.commit(CONFIG)) throw "storage";
-    if (!fs.chmod("/etc/config/nimarkoflow", 0o600)) throw "storage";
+    if (!c.commit(CONFIG)) die("storage");
+    if (!fs.chmod("/etc/config/nimarkoflow", 0o600)) die("storage");
     // No input or backend text is included in the response.
     return { ok: true, saved: true, started: start_action("restart") };
 }
@@ -121,8 +121,8 @@ try {
         let c = uci.cursor();
         c.delete(CONFIG, "flow_source");
         c.delete(CONFIG, "flow");
-        if (!c.commit(CONFIG)) throw "storage";
-        if (!fs.chmod("/etc/config/nimarkoflow", 0o600)) throw "storage";
+        if (!c.commit(CONFIG)) die("storage");
+        if (!fs.chmod("/etc/config/nimarkoflow", 0o600)) die("storage");
         // Connection shutdown is asynchronous; raw caches remain private to root.
         let stopped = start_action("stop");
         result = { ok: stopped };
